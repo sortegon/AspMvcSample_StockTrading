@@ -44,7 +44,7 @@ namespace S_Buck_HW_4.Models
         public object ReturnOnCapital { get; set; }
         public float ProfitMargin { get; set; }
         public float PriceToSales { get; set; }
-        public float PriceToBook { get; set; }
+        public float? PriceToBook { get; set; }
         public float Day200MovingAvg { get; set; }
         public float Day50MovingAvg { get; set; }
         public float InstitutionPercent { get; set; }
