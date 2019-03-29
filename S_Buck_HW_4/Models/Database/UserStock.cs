@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace S_Buck_HW_4.Models
+namespace S_Buck_HW_4.Models.Database
 {
     public class UserStock
     {
-        [Key]
         public int UserID { get; set; }
-        [Key]
+        public virtual User User { get; set; }
+
         public string Symbol { get; set; }
+        public virtual StockCompany StockCompany { get; set; }
 
         public int Shares { get; set; }
         
@@ -19,5 +16,7 @@ namespace S_Buck_HW_4.Models
         /// The amount paid for the stocks a user holds
         /// </summary>
         public decimal Basis { get; set; }
+
+        public virtual ICollection<UserStockTrade> UserStockTrades { get; set; }
     }
 }

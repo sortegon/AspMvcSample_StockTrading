@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
-namespace S_Buck_HW_4.Models
+namespace S_Buck_HW_4.Models.API
 {
     public class StockDetails
     {

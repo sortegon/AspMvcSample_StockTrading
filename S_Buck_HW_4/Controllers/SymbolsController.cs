@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using S_Buck_HW_4.Models;
+using S_Buck_HW_4.Models.API;
 
 namespace S_Buck_HW_4.Controllers
 {

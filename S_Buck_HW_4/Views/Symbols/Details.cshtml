@@ -1,13 +1,13 @@
-﻿@model S_Buck_HW_4.Models.StockDetails
+﻿@model S_Buck_HW_4.Models.API.StockDetails
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Html.DisplayTextFor(model => model.Symbol);
 }
 
-<h1>Details</h1>
+<h1>@Html.DisplayFor(model => model.Symbol) - @Html.DisplayFor(model => model.CompanyName)</h1>
 
 <div>
-    <h4>@Html.DisplayFor(model => model.Symbol) - @Html.DisplayFor(model => model.CompanyName)</h4>
+    <h4>PRICE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-4">
