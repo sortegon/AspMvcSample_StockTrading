@@ -4,70 +4,63 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using S_Buck_HW_4.Models;
 using S_Buck_HW_4.Models.API;
+using S_Buck_HW_4.Models.Database;
 
 namespace S_Buck_HW_4.Controllers
 {
     public class SymbolsController : Controller
     {
-        //Base URL for the IEXTrading API. Method specific URLs are appended to this base URL.
-        string BASE_URL = "https://api.iextrading.com/1.0/";
-        HttpClient httpClient;
-        public SymbolsController(/*ApplicationDbContext context*/)
-        {
-            //dbContext = context;
+        private readonly IEXApiClient _apiClient;
+        private readonly ApplicationDbContext _dbContext;
 
-            httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new
-                System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        public SymbolsController(IEXApiClient apiClient, ApplicationDbContext dbContext)
+        {
+            _apiClient = apiClient;
+            _dbContext = dbContext;
         }
 
         public IActionResult Index()
         {
-            string IEXTrading_API_PATH = BASE_URL + "ref-data/symbols";
-            string resultString = "";
-            List<StockSymbol> symbols = null;
-            
-            httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
-            HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
+            // Since the API call for Stock Symbols can take a while, we cache the results into the database.
+            // For this exercise, we will assume the API data does not change frequently, but in a production app
+            // we would want to track the last time the API was called and make a refresh policy.
 
-            if (response.IsSuccessStatusCode)
+            var stocks = _dbContext.StockCompanies;
+            if (!stocks.Any())
             {
-                resultString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var symbols = _apiClient.GetAllSymbols();
+                var companies =
+                    from s in symbols
+                    select new StockCompany {Symbol = s.Symbol, CompanyName = s.Name};
+                stocks.AddRange(companies);
+                _dbContext.SaveChanges();
             }
 
-            if (!resultString.Equals(""))
-            {
-                symbols = JsonConvert.DeserializeObject<List<StockSymbol>>(resultString);
-                symbols = symbols.GetRange(0, 50);
-            }
-
-            return View(symbols);
+            return View(stocks.Take(50));
         }
-
+        
+        [Route("[controller]/{symbol}")]
         public IActionResult Details(string symbol)
         {
-            string IEXTrading_API_PATH = BASE_URL + "stock/"+ symbol +"/stats";
-            string resultString = "";
-            StockDetails stockDetails = null;
-
-            httpClient.BaseAddress = new Uri(IEXTrading_API_PATH);
-            HttpResponseMessage response = httpClient.GetAsync(IEXTrading_API_PATH).GetAwaiter().GetResult();
-
-            if (response.IsSuccessStatusCode)
+            var model = new SymbolDetailViewModel
             {
-                resultString = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            }
+                Details = _apiClient.GetStockDetails(symbol),
+                Quote = _apiClient.GetStockQuote(symbol)
+            };
 
-            if (!resultString.Equals(""))
-            {
-                stockDetails = JsonConvert.DeserializeObject<StockDetails>(resultString);
-            }
+            return View(model);
+        }
 
-            return View(stockDetails);
+        public IActionResult Buy(string symbol)
+        {
+            var company = _dbContext.StockCompanies.Find(symbol);
+            var quote = _apiClient.GetStockQuote(symbol);
+            var trade = new UserStockTrade();
+
         }
     }
 }

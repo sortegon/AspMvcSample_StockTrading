@@ -1,278 +1,278 @@
-﻿@model S_Buck_HW_4.Models.API.StockDetails
+﻿@model S_Buck_HW_4.Models.SymbolDetailViewModel
 
 @{
-    ViewData["Title"] = Html.DisplayTextFor(model => model.Symbol);
+    ViewData["Title"] = Html.DisplayTextFor(model => model.Details.Symbol);
 }
 
-<h1>@Html.DisplayFor(model => model.Symbol) - @Html.DisplayFor(model => model.CompanyName)</h1>
+<h1>@Html.DisplayFor(model => model.Details.Symbol) - @Html.DisplayFor(model => model.Details.CompanyName)</h1>
 
 <div>
-    <h4>PRICE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</h4>
+    <h4>@Html.DisplayFor(model => model.Quote.LatestPrice)</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Marketcap)
+            @Html.DisplayNameFor(model => model.Details.MarketCap)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Marketcap)
+            @Html.DisplayFor(model => model.Details.MarketCap)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Beta)
+            @Html.DisplayNameFor(model => model.Details.Beta)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Beta)
+            @Html.DisplayFor(model => model.Details.Beta)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Week52high)
+            @Html.DisplayNameFor(model => model.Details.Week52high)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Week52high)
+            @Html.DisplayFor(model => model.Details.Week52high)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Week52low)
+            @Html.DisplayNameFor(model => model.Details.Week52low)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Week52low)
+            @Html.DisplayFor(model => model.Details.Week52low)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Week52change)
+            @Html.DisplayNameFor(model => model.Details.Week52change)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Week52change)
+            @Html.DisplayFor(model => model.Details.Week52change)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShortInterest)
+            @Html.DisplayNameFor(model => model.Details.ShortInterest)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ShortInterest)
+            @Html.DisplayFor(model => model.Details.ShortInterest)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShortDate)
+            @Html.DisplayNameFor(model => model.Details.ShortDate)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ShortDate)
+            @Html.DisplayFor(model => model.Details.ShortDate)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.DividendRate)
+            @Html.DisplayNameFor(model => model.Details.DividendRate)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.DividendRate)
+            @Html.DisplayFor(model => model.Details.DividendRate)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.DividendYield)
+            @Html.DisplayNameFor(model => model.Details.DividendYield)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.DividendYield)
+            @Html.DisplayFor(model => model.Details.DividendYield)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ExDividendDate)
+            @Html.DisplayNameFor(model => model.Details.ExDividendDate)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ExDividendDate)
+            @Html.DisplayFor(model => model.Details.ExDividendDate)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.LatestEPS)
+            @Html.DisplayNameFor(model => model.Details.LatestEPS)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.LatestEPS)
+            @Html.DisplayFor(model => model.Details.LatestEPS)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.LatestEPSDate)
+            @Html.DisplayNameFor(model => model.Details.LatestEPSDate)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.LatestEPSDate)
+            @Html.DisplayFor(model => model.Details.LatestEPSDate)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.SharesOutstanding)
+            @Html.DisplayNameFor(model => model.Details.SharesOutstanding)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.SharesOutstanding)
+            @Html.DisplayFor(model => model.Details.SharesOutstanding)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Float)
+            @Html.DisplayNameFor(model => model.Details.Float)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Float)
+            @Html.DisplayFor(model => model.Details.Float)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ReturnOnEquity)
+            @Html.DisplayNameFor(model => model.Details.ReturnOnEquity)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ReturnOnEquity)
+            @Html.DisplayFor(model => model.Details.ReturnOnEquity)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ConsensusEPS)
+            @Html.DisplayNameFor(model => model.Details.ConsensusEPS)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ConsensusEPS)
+            @Html.DisplayFor(model => model.Details.ConsensusEPS)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.NumberOfEstimates)
+            @Html.DisplayNameFor(model => model.Details.NumberOfEstimates)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.NumberOfEstimates)
+            @Html.DisplayFor(model => model.Details.NumberOfEstimates)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.EBITDA)
+            @Html.DisplayNameFor(model => model.Details.EBITDA)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.EBITDA)
+            @Html.DisplayFor(model => model.Details.EBITDA)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Revenue)
+            @Html.DisplayNameFor(model => model.Details.Revenue)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Revenue)
+            @Html.DisplayFor(model => model.Details.Revenue)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.GrossProfit)
+            @Html.DisplayNameFor(model => model.Details.GrossProfit)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.GrossProfit)
+            @Html.DisplayFor(model => model.Details.GrossProfit)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Cash)
+            @Html.DisplayNameFor(model => model.Details.Cash)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Cash)
+            @Html.DisplayFor(model => model.Details.Cash)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Debt)
+            @Html.DisplayNameFor(model => model.Details.Debt)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Debt)
+            @Html.DisplayFor(model => model.Details.Debt)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.TtmEPS)
+            @Html.DisplayNameFor(model => model.Details.TtmEPS)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.TtmEPS)
+            @Html.DisplayFor(model => model.Details.TtmEPS)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.RevenuePerShare)
+            @Html.DisplayNameFor(model => model.Details.RevenuePerShare)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.RevenuePerShare)
+            @Html.DisplayFor(model => model.Details.RevenuePerShare)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.RevenuePerEmployee)
+            @Html.DisplayNameFor(model => model.Details.RevenuePerEmployee)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.RevenuePerEmployee)
+            @Html.DisplayFor(model => model.Details.RevenuePerEmployee)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.PeRatioHigh)
+            @Html.DisplayNameFor(model => model.Details.PeRatioHigh)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.PeRatioHigh)
+            @Html.DisplayFor(model => model.Details.PeRatioHigh)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.PeRatioLow)
+            @Html.DisplayNameFor(model => model.Details.PeRatioLow)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.PeRatioLow)
+            @Html.DisplayFor(model => model.Details.PeRatioLow)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.EPSSurprisePercent)
+            @Html.DisplayNameFor(model => model.Details.EPSSurprisePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.EPSSurprisePercent)
+            @Html.DisplayFor(model => model.Details.EPSSurprisePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ReturnOnAssets)
+            @Html.DisplayNameFor(model => model.Details.ReturnOnAssets)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ReturnOnAssets)
+            @Html.DisplayFor(model => model.Details.ReturnOnAssets)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ProfitMargin)
+            @Html.DisplayNameFor(model => model.Details.ProfitMargin)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ProfitMargin)
+            @Html.DisplayFor(model => model.Details.ProfitMargin)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.PriceToSales)
+            @Html.DisplayNameFor(model => model.Details.PriceToSales)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.PriceToSales)
+            @Html.DisplayFor(model => model.Details.PriceToSales)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.PriceToBook)
+            @Html.DisplayNameFor(model => model.Details.PriceToBook)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.PriceToBook)
+            @Html.DisplayFor(model => model.Details.PriceToBook)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Day200MovingAvg)
+            @Html.DisplayNameFor(model => model.Details.Day200MovingAvg)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Day200MovingAvg)
+            @Html.DisplayFor(model => model.Details.Day200MovingAvg)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Day50MovingAvg)
+            @Html.DisplayNameFor(model => model.Details.Day50MovingAvg)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Day50MovingAvg)
+            @Html.DisplayFor(model => model.Details.Day50MovingAvg)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.InstitutionPercent)
+            @Html.DisplayNameFor(model => model.Details.InstitutionPercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.InstitutionPercent)
+            @Html.DisplayFor(model => model.Details.InstitutionPercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.ShortRatio)
+            @Html.DisplayNameFor(model => model.Details.ShortRatio)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.ShortRatio)
+            @Html.DisplayFor(model => model.Details.ShortRatio)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Year5ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Year5ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Year5ChangePercent)
+            @Html.DisplayFor(model => model.Details.Year5ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Year2ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Year2ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Year2ChangePercent)
+            @Html.DisplayFor(model => model.Details.Year2ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Year1ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Year1ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Year1ChangePercent)
+            @Html.DisplayFor(model => model.Details.Year1ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.YtdChangePercent)
+            @Html.DisplayNameFor(model => model.Details.YtdChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.YtdChangePercent)
+            @Html.DisplayFor(model => model.Details.YtdChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Month6ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Month6ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Month6ChangePercent)
+            @Html.DisplayFor(model => model.Details.Month6ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Month3ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Month3ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Month3ChangePercent)
+            @Html.DisplayFor(model => model.Details.Month3ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Month1ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Month1ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Month1ChangePercent)
+            @Html.DisplayFor(model => model.Details.Month1ChangePercent)
         </dd>
         <dt class = "col-sm-4">
-            @Html.DisplayNameFor(model => model.Day5ChangePercent)
+            @Html.DisplayNameFor(model => model.Details.Day5ChangePercent)
         </dt>
         <dd class = "col-sm-8">
-            @Html.DisplayFor(model => model.Day5ChangePercent)
+            @Html.DisplayFor(model => model.Details.Day5ChangePercent)
         </dd>
     </dl>
 </div>

@@ -35,6 +35,8 @@ namespace S_Buck_HW_4
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["Data:HW4:ConnectionString"]));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddScoped<IEXApiClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

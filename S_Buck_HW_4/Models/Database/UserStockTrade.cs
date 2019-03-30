@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace S_Buck_HW_4.Models.Database
 {
@@ -13,6 +14,8 @@ namespace S_Buck_HW_4.Models.Database
         public DateTime TradeDateTime { get; set; }
 
         public int Shares { get; set; }
+
+        [DataType(DataType.Currency)]
         public decimal Price { get; set; }
 
         public virtual UserStock UserStock { get; set; }

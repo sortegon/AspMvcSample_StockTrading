@@ -1,4 +1,4 @@
-﻿@model IEnumerable<S_Buck_HW_4.Models.API.StockSymbol>
+﻿@model IEnumerable<S_Buck_HW_4.Models.Database.StockCompany>
 
 @{
     ViewData["Title"] = "Symbols";
@@ -12,7 +12,7 @@
                 @Html.DisplayNameFor(model => model.Symbol)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.CompanyName)
             </th>
             <th></th>
         </tr>
@@ -24,7 +24,7 @@
                 @Html.DisplayFor(modelItem => item.Symbol)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.CompanyName)
             </td>
             <td>
                 @Html.ActionLink("Details", "Details", new { symbol=item.Symbol })
