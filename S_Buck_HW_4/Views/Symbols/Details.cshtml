@@ -7,7 +7,10 @@
 <h1>@Html.DisplayFor(model => model.Details.Symbol) - @Html.DisplayFor(model => model.Details.CompanyName)</h1>
 
 <div>
-    <h4>@Html.DisplayFor(model => model.Quote.LatestPrice)</h4>
+<h4>@Html.DisplayFor(model => model.Quote.LatestPrice)</h4>
+    <div>
+        <a asp-controller="Symbols" asp-action="Buy" asp-route-symbol="@Model.Details.Symbol">Buy Shares of @Html.DisplayFor(model => model.Details.Symbol)</a>
+    </div>
     <hr />
     <dl class="row">
         <dt class = "col-sm-4">
@@ -279,3 +282,4 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+

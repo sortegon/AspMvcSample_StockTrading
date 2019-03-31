@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using S_Buck_HW_4.Models;
@@ -54,13 +55,39 @@ namespace S_Buck_HW_4.Controllers
 
             return View(model);
         }
-
+        [Route("[controller]/{symbol}/[action]")]
         public IActionResult Buy(string symbol)
         {
-            var company = _dbContext.StockCompanies.Find(symbol);
-            var quote = _apiClient.GetStockQuote(symbol);
-            var trade = new UserStockTrade();
+            if (String.IsNullOrEmpty(symbol)) return BadRequest();
 
+            symbol = symbol.ToUpper();
+
+            var company = _dbContext.StockCompanies.Find(symbol);
+            if (company == null) return NotFound();
+
+            var quote = _apiClient.GetStockQuote(symbol);
+            if (quote?.LatestPrice == null) return NotFound();
+
+            var users =
+                from user in _dbContext.Users
+                orderby user.LastName
+                select new
+                {
+                    ID = user.UserID,
+                    FullName = user.FirstName + " " + user.LastName
+                };
+
+            var trade = new UserStockTrade
+            {
+                Symbol = symbol,
+                Price = quote.LatestPrice.Value,
+                Shares = 1
+            };
+
+            ViewBag.CompanyName = company.CompanyName;
+            ViewBag.Users = new SelectList(users, "ID", "FullName");
+
+            return View(trade);
         }
     }
 }

@@ -27,7 +27,9 @@
                 @Html.DisplayFor(modelItem => item.CompanyName)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { symbol=item.Symbol })
+                @Html.ActionLink("Details", "Details", new { symbol = item.Symbol })
+                |
+                @Html.ActionLink("Buy", "Buy", new { symbol = item.Symbol })
             </td>
         </tr>
 }
