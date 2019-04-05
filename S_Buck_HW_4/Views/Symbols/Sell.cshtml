@@ -1,0 +1,43 @@
+﻿@model S_Buck_HW_4.Models.Database.UserStockTrade
+
+@{
+    ViewData["Title"] = "Sell "+ Html.DisplayTextFor(model => model.Symbol);
+}
+
+<h1>Sell Shares of @Html.DisplayFor(model => model.Symbol) (@ViewBag.CompanyName)</h1>
+
+<h4>@Html.DisplayFor(model => model.Price) per Share</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Buy">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserID" class="control-label">User Name</label>
+                <select asp-for="UserID" class="form-control" asp-items="ViewBag.Users" disabled></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Shares" class="control-label">
+                    @Html.DisplayNameFor(model => model.Shares) (max @ViewBag.MaxShares)
+                </label>
+                <input asp-for="Shares" min="1" max="@ViewBag.MaxShares" class="form-control" />
+                <span asp-validation-for="Shares" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Sell" class="btn btn-primary" />
+            </div>
+
+            <input type="hidden" asp-for="UserID" />
+            <input type="hidden" asp-for="Symbol" />
+            <input type="hidden" asp-for="Price" />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.UserID">Back to User</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

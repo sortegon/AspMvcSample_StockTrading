@@ -65,5 +65,17 @@ namespace S_Buck_HW_4
             string apiPath = BASE_URL + "stock/" + symbol + "/quote";
             return Get<StockQuote>(apiPath);
         }
+
+        public IDictionary<string, StockQuote> GetStockQuotes(IEnumerable<string> symbols)
+        {
+            var symbolList = String.Join(",", symbols);
+            string apiPath = BASE_URL + $"stock/market/batch?types=quote&symbols={symbolList}";
+            var result = Get<IDictionary<string,IDictionary<string,StockQuote>>>(apiPath);
+            return result.ToDictionary(x => x.Key, x =>
+            {
+                var exists = x.Value.TryGetValue("quote", out var value);
+                return exists ? value : null;
+            });
+        }
     }
 }

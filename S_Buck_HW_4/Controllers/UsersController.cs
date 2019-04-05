@@ -14,10 +14,12 @@ namespace S_Buck_HW_4.Controllers
     public class UsersController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEXApiClient _apiClient;
 
-        public UsersController(ApplicationDbContext context)
+        public UsersController(ApplicationDbContext context, IEXApiClient apiClient)
         {
             _context = context;
+            _apiClient = apiClient;
         }
 
         // GET: Users
@@ -35,11 +37,16 @@ namespace S_Buck_HW_4.Controllers
             }
 
             var user = await _context.Users
+                .Include(u => u.Stocks)
                 .FirstOrDefaultAsync(m => m.UserID == id);
             if (user == null)
             {
                 return NotFound();
             }
+
+            ViewBag.StockPrices = _apiClient
+                .GetStockQuotes(user.Stocks.Select(s => s.Symbol))
+                .ToDictionary(sq => sq.Key, sq => sq.Value.LatestPrice);
 
             return View(user);
         }

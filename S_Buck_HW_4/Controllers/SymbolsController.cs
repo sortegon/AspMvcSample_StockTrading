@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -55,8 +56,9 @@ namespace S_Buck_HW_4.Controllers
 
             return View(model);
         }
+
         [Route("[controller]/{symbol}/[action]")]
-        public IActionResult Buy(string symbol)
+        public IActionResult Buy(string symbol, int? userId)
         {
             if (String.IsNullOrEmpty(symbol)) return BadRequest();
 
@@ -84,10 +86,126 @@ namespace S_Buck_HW_4.Controllers
                 Shares = 1
             };
 
+            if (userId.HasValue && users.Select(u => u.ID).Contains(userId.Value))
+            {
+                trade.UserID = userId.Value;
+            }
+
             ViewBag.CompanyName = company.CompanyName;
             ViewBag.Users = new SelectList(users, "ID", "FullName");
 
             return View(trade);
+        }
+
+        [HttpPost, Route("[controller]/{symbol}/[action]")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Buy(string symbol, [Bind("Symbol,Price,UserID,Shares")] UserStockTrade trade)
+        {
+            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol) return BadRequest();
+
+            if (!ModelState.IsValid) return View(trade);
+
+            using (var transaction = _dbContext.Database.BeginTransaction(IsolationLevel.RepeatableRead))
+            {
+                var userStock = _dbContext.UserStocks.Find(trade.UserID, trade.Symbol);
+                if (userStock == null)
+                {
+                    userStock = new UserStock
+                    {
+                        UserID = trade.UserID,
+                        Symbol = trade.Symbol,
+                        Shares = 0,
+                        Basis = 0
+                    };
+
+                    _dbContext.UserStocks.Add(userStock);
+                    _dbContext.SaveChanges();
+                }
+
+                userStock.Shares += trade.Shares;
+                userStock.Basis += trade.Shares * trade.Price;
+
+                trade.TradeDateTime = DateTime.UtcNow;
+
+                _dbContext.UserStockTrades.Add(trade);
+                _dbContext.UserStocks.Update(userStock);
+
+                _dbContext.SaveChanges();
+                transaction.Commit();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Route("[controller]/{symbol}/[action]")]
+        public IActionResult Sell(string symbol, int? userId)
+        {
+            if (String.IsNullOrEmpty(symbol) || !userId.HasValue || userId <= 0) return BadRequest();
+
+            symbol = symbol.ToUpper();
+
+            var userStock = _dbContext.UserStocks
+                .Include(us => us.StockCompany)
+                .FirstOrDefault(us => us.UserID == userId & us.Symbol == symbol);
+            if (userStock == null) return NotFound();
+
+            var company = userStock.StockCompany;
+
+            var quote = _apiClient.GetStockQuote(symbol);
+            if (quote?.LatestPrice == null) return NotFound();
+
+            var users =
+                from user in _dbContext.Users
+                orderby user.LastName
+                select new
+                {
+                    ID = user.UserID,
+                    FullName = user.FirstName + " " + user.LastName
+                };
+
+            var trade = new UserStockTrade
+            {
+                UserID = userId.Value,
+                Symbol = symbol,
+                Price = quote.LatestPrice.Value,
+                Shares = 1
+            };
+
+            ViewBag.MaxShares = userStock.Shares;
+            ViewBag.CompanyName = company.CompanyName;
+            ViewBag.Users = new SelectList(users, "ID", "FullName");
+
+            return View(trade);
+        }
+
+        [HttpPost, Route("[controller]/{symbol}/[action]")]
+        [ValidateAntiForgeryToken]
+        public IActionResult Sell(string symbol, int? userId, [Bind("Symbol,Price,UserID,Shares")] UserStockTrade trade)
+        {
+            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol
+                || !userId.HasValue || userId <= 0 || userId != trade.UserID) return BadRequest();
+
+            if (!ModelState.IsValid) return View(trade);
+
+            using (var transaction = _dbContext.Database.BeginTransaction(IsolationLevel.RepeatableRead))
+            {
+                var userStock = _dbContext.UserStocks.Find(trade.UserID, trade.Symbol);
+                if (userStock == null || userStock.Shares < trade.Shares) return BadRequest();
+
+                trade.TradeDateTime = DateTime.UtcNow;
+                trade.Shares = -trade.Shares; // switch to negative for selling
+
+                userStock.Shares += trade.Shares;
+                userStock.Basis += trade.Shares * trade.Price;
+
+                _dbContext.UserStockTrades.Add(trade);
+                _dbContext.UserStocks.Update(userStock);
+
+                _dbContext.SaveChanges();
+                transaction.Commit();
+            }
+
+            return RedirectToAction("Details", "Users", new {id = userId});
         }
     }
 }

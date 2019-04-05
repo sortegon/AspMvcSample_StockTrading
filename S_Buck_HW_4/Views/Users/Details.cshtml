@@ -5,10 +5,8 @@
 }
 
 <h1>User Details</h1>
-
+<hr />
 <div>
-    <h4>User</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FirstName)
@@ -23,6 +21,63 @@
             @Html.DisplayFor(model => model.LastName)
         </dd>
     </dl>
+    <table class="table text-right">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Stocks.First().Symbol)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Stocks.First().Basis)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Stocks.First().Shares)
+                </th>
+                <th>
+                    Price
+                </th>
+                <th>
+                    Total Value
+                </th>
+                <th>
+                    Total Gain (Loss)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Stocks) {
+            var hasItemPrice = ((IDictionary<string,decimal?>)ViewBag.StockPrices).TryGetValue(item.Symbol, out var itemPrice) && itemPrice.HasValue;
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Symbol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Basis)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Shares)
+                </td>
+                <td>
+                    @(!hasItemPrice ? "" : $"{itemPrice:C}")
+                </td>
+                <td>
+                    @(!hasItemPrice ? "" : $"{(itemPrice * item.Shares):C}")
+                </td>
+                <td>
+                    @(!hasItemPrice ? "" : $"{(item.Basis - itemPrice * item.Shares):C}")
+                </td>
+                <td>
+                    <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@item.Symbol">Details</a>
+                    |
+                    <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Buy</a>
+                    |
+                    <a asp-controller="Symbols" asp-action="Sell" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Sell</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.UserID">Edit</a> |

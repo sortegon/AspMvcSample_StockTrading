@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace S_Buck_HW_4.Models.Database
 {
@@ -15,6 +16,7 @@ namespace S_Buck_HW_4.Models.Database
         /// <summary>
         /// The amount paid for the stocks a user holds
         /// </summary>
+        [DataType(DataType.Currency)]
         public decimal Basis { get; set; }
 
         public virtual ICollection<UserStockTrade> UserStockTrades { get; set; }
