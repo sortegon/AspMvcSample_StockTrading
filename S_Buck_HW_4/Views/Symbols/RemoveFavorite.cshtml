@@ -1,0 +1,32 @@
+﻿@model S_Buck_HW_4.Models.Database.UserStockFavorite
+
+@{
+    ViewData["Title"] = "Unfavorite "+ Html.DisplayTextFor(model => model.Symbol);
+}
+
+<h1>Remove from Favorites: @Html.DisplayFor(model => model.Symbol) (@ViewBag.CompanyName)</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="RemoveFavorite">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserID" class="control-label">User Name</label>
+                <select asp-for="UserID" class="form-control" asp-items="ViewBag.Users" disabled></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Remove Favorite" class="btn btn-primary" />
+            </div>
+
+            <input type="hidden" asp-for="UserID" />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.UserID">Back to User</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

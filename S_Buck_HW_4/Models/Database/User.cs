@@ -12,5 +12,6 @@ namespace S_Buck_HW_4.Models.Database
         public string LastName { get; set; }
 
         public virtual ICollection<UserStock> Stocks { get; set; }
+        public virtual ICollection<UserStockFavorite> Favorites { get; set; }
     }
 }

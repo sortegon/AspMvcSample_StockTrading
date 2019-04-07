@@ -38,17 +38,44 @@ namespace S_Buck_HW_4.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Stocks)
+                .Include(u => u.Favorites)
+                .ThenInclude(f => f.StockCompany)
                 .FirstOrDefaultAsync(m => m.UserID == id);
             if (user == null)
             {
                 return NotFound();
             }
 
+            var stockSymbols =
+                from s in user.Stocks
+                select s.Symbol;
+            var favSymbols =
+                from f in user.Favorites
+                select f.Symbol;
+            var quoteSymbols = stockSymbols.Union(favSymbols);
+
             ViewBag.StockPrices = _apiClient
-                .GetStockQuotes(user.Stocks.Select(s => s.Symbol))
+                .GetStockQuotes(quoteSymbols)
                 .ToDictionary(sq => sq.Key, sq => sq.Value.LatestPrice);
 
             return View(user);
+        }
+
+        // GET: Users/Details/5/AAPL
+        [Route("[controller]/[action]/{id}/{symbol}")]
+        public async Task<IActionResult> Details(int id, string symbol)
+        {
+            var userStock = await _context.UserStocks
+                .Include(s => s.User)
+                .Include(s => s.StockCompany)
+                .Include(s => s.UserStockTrades)
+                .FirstOrDefaultAsync(m => m.UserID == id && m.Symbol == symbol);
+            if (userStock == null)
+            {
+                return NotFound();
+            }
+
+            return View("History", userStock);
         }
 
         // GET: Users/Create

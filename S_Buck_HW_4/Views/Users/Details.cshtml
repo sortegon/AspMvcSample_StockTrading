@@ -4,25 +4,18 @@
     ViewData["Title"] = Html.DisplayTextFor(model => model.FirstName) + " " + Html.DisplayTextFor(model => model.LastName);
 }
 
-<h1>User Details</h1>
-<hr />
+<h1>@Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)</h1>
 <div>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-    </dl>
-    <table class="table text-right">
-        <thead>
+    @if (!Model.Stocks.Any() && !Model.Favorites.Any())
+    {
+        <p>There's nothing here right now.</p>
+        <p>Add a stock to your favorites or buy some shares and it will show up here.</p>
+    }
+    @if (Model.Stocks.Any())
+    {
+        <h4>Portfolio</h4>
+        <table class="table text-right">
+            <thead>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Stocks.First().Symbol)
@@ -44,40 +37,88 @@
                 </th>
                 <th></th>
             </tr>
-        </thead>
-        <tbody>
-        @foreach (var item in Model.Stocks) {
-            var hasItemPrice = ((IDictionary<string,decimal?>)ViewBag.StockPrices).TryGetValue(item.Symbol, out var itemPrice) && itemPrice.HasValue;
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Stocks.OrderBy(s => s.Symbol))
+            {
+                var hasItemPrice = ((IDictionary<string, decimal?>) ViewBag.StockPrices).TryGetValue(item.Symbol, out var itemPrice) && itemPrice.HasValue;
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Symbol)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Basis)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Shares)
+                    </td>
+                    <td>
+                        @(!hasItemPrice ? "" : $"{itemPrice:C}")
+                    </td>
+                    <td>
+                        @(!hasItemPrice ? "" : $"{(itemPrice * item.Shares):C}")
+                    </td>
+                    <td>
+                        @(!hasItemPrice ? "" : $"{(item.Basis - itemPrice * item.Shares):C}")
+                    </td>
+                    <td>
+                        <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@item.Symbol">Details</a>
+                        |
+                        <a asp-action="Details" asp-route-id="@Model.UserID" asp-route-symbol="@item.Symbol">Trades</a>
+                        |
+                        <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Buy</a>
+                        |
+                        <a asp-controller="Symbols" asp-action="Sell" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Sell</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    @if (Model.Favorites.Any())
+    {
+        <h4>Favorites</h4>
+        <table class="table text-right">
+            <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Symbol)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Basis)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Shares)
-                </td>
-                <td>
-                    @(!hasItemPrice ? "" : $"{itemPrice:C}")
-                </td>
-                <td>
-                    @(!hasItemPrice ? "" : $"{(itemPrice * item.Shares):C}")
-                </td>
-                <td>
-                    @(!hasItemPrice ? "" : $"{(item.Basis - itemPrice * item.Shares):C}")
-                </td>
-                <td>
-                    <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@item.Symbol">Details</a>
-                    |
-                    <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Buy</a>
-                    |
-                    <a asp-controller="Symbols" asp-action="Sell" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Sell</a>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Favorites.First().Symbol)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Favorites.First().StockCompany.CompanyName)
+                </th>
+                <th>
+                    Price
+                </th>
+                <th></th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Favorites.OrderBy(f => f.Symbol))
+            {
+                var hasItemPrice = ((IDictionary<string, decimal?>) ViewBag.StockPrices).TryGetValue(item.Symbol, out var itemPrice) && itemPrice.HasValue;
+                <tr>
+                    <td style="white-space: nowrap">
+                        @Html.DisplayFor(modelItem => item.Symbol)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StockCompany.CompanyName)
+                    </td>
+                    <td style="white-space: nowrap">
+                        @(!hasItemPrice ? "" : $"{itemPrice:C}")
+                    </td>
+                    <td style="white-space: nowrap">
+                        <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@item.Symbol">Details</a>
+                        |
+                        <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Buy</a>
+                        |
+                        <a asp-controller="Symbols" asp-action="RemoveFavorite" asp-route-userId="@item.UserID" asp-route-symbol="@item.Symbol">Remove</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.UserID">Edit</a> |

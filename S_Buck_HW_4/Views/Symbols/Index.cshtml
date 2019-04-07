@@ -4,11 +4,23 @@
     ViewData["Title"] = "Symbols";
 }
 
-
+<div>
+    @foreach (char letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    {
+        if (letter.ToString() == ViewBag.BeginsWith)
+        {
+            <span style="font-weight:bold">@letter</span>
+        }
+        else
+        {
+            <span>@Html.ActionLink(letter.ToString(), "Index", new { beginsWith = letter })</span>
+        }
+    }
+</div>
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th style="white-space: nowrap">
                 @Html.DisplayNameFor(model => model.Symbol)
             </th>
             <th>
@@ -18,16 +30,18 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.OrderBy(s => s.Symbol)) {
         <tr>
-            <td>
+            <td style="white-space: nowrap">
                 @Html.DisplayFor(modelItem => item.Symbol)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CompanyName)
             </td>
-            <td>
+            <td style="white-space: nowrap">
                 @Html.ActionLink("Details", "Details", new { symbol = item.Symbol })
+                |
+                @Html.ActionLink("Favorite", "AddFavorite", new { symbol = item.Symbol })
                 |
                 @Html.ActionLink("Buy", "Buy", new { symbol = item.Symbol })
             </td>
@@ -35,3 +49,17 @@
 }
     </tbody>
 </table>
+
+<div>
+    @foreach (char letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    {
+        if (letter.ToString() == ViewBag.BeginsWith)
+        {
+            <span style="font-weight:bold">@letter</span>
+        }
+        else
+        {
+            <span>@Html.ActionLink(letter.ToString(), "Index", new { beginsWith = letter })</span>
+        }
+    }
+</div>

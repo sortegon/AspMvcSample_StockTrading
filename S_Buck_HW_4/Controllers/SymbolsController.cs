@@ -25,7 +25,7 @@ namespace S_Buck_HW_4.Controllers
             _dbContext = dbContext;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string beginsWith = "A")
         {
             // Since the API call for Stock Symbols can take a while, we cache the results into the database.
             // For this exercise, we will assume the API data does not change frequently, but in a production app
@@ -37,12 +37,15 @@ namespace S_Buck_HW_4.Controllers
                 var symbols = _apiClient.GetAllSymbols();
                 var companies =
                     from s in symbols
+                    where s.IsEnabled
                     select new StockCompany {Symbol = s.Symbol, CompanyName = s.Name};
                 stocks.AddRange(companies);
                 _dbContext.SaveChanges();
             }
 
-            return View(stocks.Take(50));
+            ViewBag.BeginsWith = beginsWith;
+
+            return View(stocks.Where(s=>s.Symbol.StartsWith(beginsWith)));
         }
         
         [Route("[controller]/{symbol}")]
@@ -204,6 +207,105 @@ namespace S_Buck_HW_4.Controllers
                 _dbContext.SaveChanges();
                 transaction.Commit();
             }
+
+            return RedirectToAction("Details", "Users", new {id = userId});
+        }
+
+        [Route("[controller]/{symbol}/[action]")]
+        public IActionResult AddFavorite(string symbol, int? userId)
+        {
+            if (String.IsNullOrEmpty(symbol)) return BadRequest();
+
+            symbol = symbol.ToUpper();
+
+            var company = _dbContext.StockCompanies.Find(symbol);
+            if (company == null) return NotFound();
+
+            var users =
+                from user in _dbContext.Users
+                orderby user.LastName
+                select new
+                {
+                    ID = user.UserID,
+                    FullName = user.FirstName + " " + user.LastName
+                };
+
+            var favorite = new UserStockFavorite()
+            {
+                Symbol = symbol
+            };
+
+            if (userId.HasValue && users.Select(u => u.ID).Contains(userId.Value))
+            {
+                favorite.UserID = userId.Value;
+            }
+
+            ViewBag.CompanyName = company.CompanyName;
+            ViewBag.Users = new SelectList(users, "ID", "FullName");
+
+            return View(favorite);
+        }
+
+        [HttpPost, Route("[controller]/{symbol}/[action]")]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddFavorite(string symbol, [Bind("Symbol,UserID")] UserStockFavorite favorite)
+        {
+            if (String.IsNullOrEmpty(symbol) || symbol != favorite.Symbol) return BadRequest();
+
+            if (!ModelState.IsValid) return View(favorite);
+
+                var userFavorite = _dbContext.UserStockFavorites.Find(favorite.UserID, favorite.Symbol);
+                if (userFavorite == null)
+                {
+                    _dbContext.UserStockFavorites.Add(favorite);
+                    _dbContext.SaveChanges();
+                }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Route("[controller]/{symbol}/[action]")]
+        public IActionResult RemoveFavorite(string symbol, int? userId)
+        {
+            if (String.IsNullOrEmpty(symbol) || !userId.HasValue || userId <= 0) return BadRequest();
+
+            symbol = symbol.ToUpper();
+
+            var favorite = _dbContext.UserStockFavorites
+                .Include(us => us.StockCompany)
+                .FirstOrDefault(us => us.UserID == userId & us.Symbol == symbol);
+            if (favorite == null) return NotFound();
+
+            var company = favorite.StockCompany;
+
+            var users =
+                from user in _dbContext.Users
+                orderby user.LastName
+                select new
+                {
+                    ID = user.UserID,
+                    FullName = user.FirstName + " " + user.LastName
+                };
+            ViewBag.CompanyName = company.CompanyName;
+            ViewBag.Users = new SelectList(users, "ID", "FullName");
+
+            return View(favorite);
+        }
+
+        [HttpPost, Route("[controller]/{symbol}/[action]")]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveFavorite(string symbol, int? userId, [Bind("Symbol,UserID")] UserStockFavorite favorite)
+        {
+            if (String.IsNullOrEmpty(symbol) || symbol != favorite.Symbol
+                || !userId.HasValue || userId <= 0 || userId != favorite.UserID) return BadRequest();
+
+            if (!ModelState.IsValid) return View(favorite);
+
+            var userFavorite = _dbContext.UserStocks.Find(favorite.UserID, favorite.Symbol);
+            if (userFavorite == null) return BadRequest();
+
+            _dbContext.UserStocks.Remove(userFavorite);
+            _dbContext.SaveChanges();
 
             return RedirectToAction("Details", "Users", new {id = userId});
         }

@@ -1,0 +1,81 @@
+﻿@model S_Buck_HW_4.Models.Database.UserStock
+
+@{
+    ViewData["Title"] = Html.DisplayTextFor(model => model.Symbol) + " History - " + Html.DisplayTextFor(model => model.User.FirstName) + " " + Html.DisplayTextFor(model => model.User.LastName);
+}
+<h1>Trade History</h1>
+<h4>@Html.DisplayFor(model => model.User.FirstName) @Html.DisplayFor(model => model.User.LastName)</h4>
+<h4>@Html.DisplayFor(model => model.Symbol) (@Html.DisplayFor(model => model.StockCompany.CompanyName))</h4>
+
+<div>
+    <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@Model.Symbol">Stock Details</a>
+    |
+    <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@Model.UserID" asp-route-symbol="@Model.Symbol">Buy</a>
+    |
+    <a asp-controller="Symbols" asp-action="Sell" asp-route-userId="@Model.UserID" asp-route-symbol="@Model.Symbol">Sell</a>
+    |
+    <a asp-action="Details" asp-route-id="@Model.UserID" asp-route-symbol="">Back to User</a>
+</div>
+<div>
+    @if (!Model.UserStockTrades.Any())
+    {
+        <p>There's nothing here right now.</p>
+        <p>Buy some shares and it will show up here.</p>
+    }
+    else
+    {
+        <table class="table text-right">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserStockTrades.First().TradeDateTime)
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserStockTrades.First().Price)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UserStockTrades.First().Shares)
+                    </th>
+                    <th>
+                        Total Price
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.UserStockTrades.OrderByDescending(s => s.TradeDateTime))
+                {
+                    
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TradeDateTime)
+                        </td>
+                        <td>
+                            @(item.Shares > 0 ? "BUY" : "SELL")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                        <td>
+                            @($"{Math.Abs(item.Shares):D}")
+                        </td>
+                        <td>
+                            @($"{(item.Price * Math.Abs(item.Shares)):C}")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+<div>
+    <a asp-controller="Symbols" asp-action="Details" asp-route-symbol="@Model.Symbol">Stock Details</a>
+    |
+    <a asp-controller="Symbols" asp-action="Buy" asp-route-userId="@Model.UserID" asp-route-symbol="@Model.Symbol">Buy</a>
+    |
+    <a asp-controller="Symbols" asp-action="Sell" asp-route-userId="@Model.UserID" asp-route-symbol="@Model.Symbol">Sell</a>
+    |
+    <a asp-action="Details" asp-route-id="@Model.UserID">Back to User</a>
+</div>
