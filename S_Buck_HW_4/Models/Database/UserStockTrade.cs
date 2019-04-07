@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace S_Buck_HW_4.Models.Database
@@ -11,6 +12,7 @@ namespace S_Buck_HW_4.Models.Database
         public string Symbol { get; set; }
         public virtual StockCompany StockCompany { get; set; }
 
+        [DisplayName("Trade Date/Time"), DataType(DataType.DateTime)]
         public DateTime TradeDateTime { get; set; }
         public int Shares { get; set; }
 

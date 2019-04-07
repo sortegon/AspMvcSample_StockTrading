@@ -52,7 +52,7 @@ namespace S_Buck_HW_4.Controllers
             var favSymbols =
                 from f in user.Favorites
                 select f.Symbol;
-            var quoteSymbols = stockSymbols.Union(favSymbols);
+            var quoteSymbols = stockSymbols.Union(favSymbols).ToList();
 
             ViewBag.StockPrices = _apiClient
                 .GetStockQuotes(quoteSymbols)
