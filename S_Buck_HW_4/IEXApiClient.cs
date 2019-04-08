@@ -45,7 +45,10 @@ namespace S_Buck_HW_4
 
             if (!resultString.Equals(""))
             {
-                result = JsonConvert.DeserializeObject<T>(resultString);
+                // IEX api can return invalid values for their type.
+                // Ignore deserialization errors and leave those properties with default values (usually null)
+                var settings = new JsonSerializerSettings { Error = (se, ev) => { ev.ErrorContext.Handled = true; } };
+                result = JsonConvert.DeserializeObject<T>(resultString, settings);
             }
 
             return result;
