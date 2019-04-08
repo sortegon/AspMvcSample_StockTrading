@@ -47,7 +47,7 @@ namespace S_Buck_HW_4.Controllers
 
             ViewBag.BeginsWith = beginsWith;  // pass to the view so the selected letter can be bolded instead of linked
 
-            return View();
+            return View(filteredStocks);
         }
         
         [Route("[controller]/{symbol}")]

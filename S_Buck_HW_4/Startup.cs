@@ -32,7 +32,7 @@ namespace S_Buck_HW_4
             });
 
             // Setup EF connection
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration["Data:HW4:ConnectionString"]));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("HW4Connection")));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
