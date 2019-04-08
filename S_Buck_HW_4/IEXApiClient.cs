@@ -8,6 +8,9 @@ using S_Buck_HW_4.Models.API;
 
 namespace S_Buck_HW_4
 {
+    /// <summary>
+    /// Class to factor out calls to the IEX api
+    /// </summary>
     public class IEXApiClient
     {
         //Base URL for the IEXTrading API. Method specific URLs are appended to this base URL.
@@ -66,12 +69,23 @@ namespace S_Buck_HW_4
             return Get<StockQuote>(apiPath);
         }
 
+        /// <summary>
+        /// Batch method to get Quotes for multiple symbols with one api call
+        /// </summary>
+        /// <param name="symbols">The multiple symbols to get quotes for</param>
+        /// <returns>A dictionary mapping symbols to quotes</returns>
         public IDictionary<string, StockQuote> GetStockQuotes(ICollection<string> symbols)
         {
+            // If there are no symbols, avoid an api call and just return an empty dictionary
             if (!symbols.Any()) return new Dictionary<string, StockQuote>();
 
             var symbolList = String.Join(",", symbols);
             string apiPath = BASE_URL + $"stock/market/batch?types=quote&symbols={symbolList}";
+
+            /*  batch endpoint returns an extra level of nesting i.e.
+                    { "AAPL": { "quote": { ... } } }
+                so deserialize as a dictionary-of-dictionaries and then get out the "quote" value
+             */
             var result = Get<IDictionary<string,IDictionary<string,StockQuote>>>(apiPath);
             return result.ToDictionary(x => x.Key, x =>
             {

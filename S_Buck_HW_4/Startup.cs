@@ -36,6 +36,7 @@ namespace S_Buck_HW_4
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            // Add our factored-out api client class to dependency injection so we can pass it to the controllers
             services.AddScoped<IEXApiClient>();
         }
 

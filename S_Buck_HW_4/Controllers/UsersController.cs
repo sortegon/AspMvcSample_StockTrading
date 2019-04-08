@@ -36,6 +36,7 @@ namespace S_Buck_HW_4.Controllers
                 return NotFound();
             }
 
+            // include all of the related entities so we can show Portfolio and Favorites tables
             var user = await _context.Users
                 .Include(u => u.Stocks)
                 .Include(u => u.Favorites)
@@ -46,6 +47,7 @@ namespace S_Buck_HW_4.Controllers
                 return NotFound();
             }
 
+            // merge symbols from stocks and favorites so we only make one api call
             var stockSymbols =
                 from s in user.Stocks
                 select s.Symbol;
@@ -65,6 +67,7 @@ namespace S_Buck_HW_4.Controllers
         [Route("[controller]/[action]/{id}/{symbol}")]
         public async Task<IActionResult> Details(int id, string symbol)
         {
+            // include all of the related entities so we can show the company name and Trades table
             var userStock = await _context.UserStocks
                 .Include(s => s.User)
                 .Include(s => s.StockCompany)

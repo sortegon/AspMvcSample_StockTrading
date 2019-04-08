@@ -37,15 +37,17 @@ namespace S_Buck_HW_4.Controllers
                 var symbols = _apiClient.GetAllSymbols();
                 var companies =
                     from s in symbols
-                    where s.IsEnabled
+                    where s.IsEnabled  // skip symbols that aren't enabled on IEX
                     select new StockCompany {Symbol = s.Symbol, CompanyName = s.Name};
                 stocks.AddRange(companies);
                 _dbContext.SaveChanges();
             }
 
-            ViewBag.BeginsWith = beginsWith;
+            var filteredStocks = stocks.Where(s => s.Symbol.StartsWith(beginsWith));
 
-            return View(stocks.Where(s=>s.Symbol.StartsWith(beginsWith)));
+            ViewBag.BeginsWith = beginsWith;  // pass to the view so the selected letter can be bolded instead of linked
+
+            return View();
         }
         
         [Route("[controller]/{symbol}")]
@@ -86,7 +88,7 @@ namespace S_Buck_HW_4.Controllers
             {
                 Symbol = symbol,
                 Price = quote.LatestPrice.Value,
-                Shares = 1
+                Shares = 1  // We don't allow shares to be 0, so start at 1
             };
 
             if (userId.HasValue && users.Select(u => u.ID).Contains(userId.Value))
@@ -104,10 +106,12 @@ namespace S_Buck_HW_4.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Buy(string symbol, [Bind("Symbol,Price,UserID,Shares")] UserStockTrade trade)
         {
-            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol) return BadRequest();
+            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol || trade.Shares == 0) return BadRequest();
 
             if (!ModelState.IsValid) return View(trade);
 
+            // We need to use a RepeatableRead transaction to ensure that the UserStock cannot be modified
+            // while we are updating it and saving this trade
             using (var transaction = _dbContext.Database.BeginTransaction(IsolationLevel.RepeatableRead))
             {
                 var userStock = _dbContext.UserStocks.Find(trade.UserID, trade.Symbol);
@@ -128,7 +132,7 @@ namespace S_Buck_HW_4.Controllers
                 userStock.Shares += trade.Shares;
                 userStock.Basis += trade.Shares * trade.Price;
 
-                trade.TradeDateTime = DateTime.UtcNow;
+                trade.TradeDateTime = DateTime.Now;
 
                 _dbContext.UserStockTrades.Add(trade);
                 _dbContext.UserStocks.Update(userStock);
@@ -171,7 +175,7 @@ namespace S_Buck_HW_4.Controllers
                 UserID = userId.Value,
                 Symbol = symbol,
                 Price = quote.LatestPrice.Value,
-                Shares = 1
+                Shares = 1  // We don't allow shares to be 0, so start at 1
             };
 
             ViewBag.MaxShares = userStock.Shares;
@@ -185,17 +189,19 @@ namespace S_Buck_HW_4.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Sell(string symbol, int? userId, [Bind("Symbol,Price,UserID,Shares")] UserStockTrade trade)
         {
-            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol
+            if (String.IsNullOrEmpty(symbol) || symbol != trade.Symbol || trade.Shares == 0
                 || !userId.HasValue || userId <= 0 || userId != trade.UserID) return BadRequest();
 
             if (!ModelState.IsValid) return View(trade);
 
+            // We need to use a RepeatableRead transaction to ensure that the UserStock cannot be modified
+            // while we are updating it and saving this trade
             using (var transaction = _dbContext.Database.BeginTransaction(IsolationLevel.RepeatableRead))
             {
                 var userStock = _dbContext.UserStocks.Find(trade.UserID, trade.Symbol);
                 if (userStock == null || userStock.Shares < trade.Shares) return BadRequest();
 
-                trade.TradeDateTime = DateTime.UtcNow;
+                trade.TradeDateTime = DateTime.Now;
                 trade.Shares = -trade.Shares; // switch to negative for selling
 
                 userStock.Shares += trade.Shares;
@@ -255,6 +261,7 @@ namespace S_Buck_HW_4.Controllers
             if (!ModelState.IsValid) return View(favorite);
 
                 var userFavorite = _dbContext.UserStockFavorites.Find(favorite.UserID, favorite.Symbol);
+                // if the stock is already in the User's favorites, we just do nothing
                 if (userFavorite == null)
                 {
                     _dbContext.UserStockFavorites.Add(favorite);
@@ -302,10 +309,12 @@ namespace S_Buck_HW_4.Controllers
             if (!ModelState.IsValid) return View(favorite);
 
             var userFavorite = _dbContext.UserStocks.Find(favorite.UserID, favorite.Symbol);
-            if (userFavorite == null) return BadRequest();
-
-            _dbContext.UserStocks.Remove(userFavorite);
-            _dbContext.SaveChanges();
+            // if the stock is not in the User's favorites, we just do nothing
+            if (userFavorite != null)
+            {
+                _dbContext.UserStocks.Remove(userFavorite);
+                _dbContext.SaveChanges();
+            }
 
             return RedirectToAction("Details", "Users", new {id = userId});
         }
